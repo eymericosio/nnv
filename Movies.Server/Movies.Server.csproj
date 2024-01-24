@@ -1,0 +1,49 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Destructurama.Attributed" Version="3.1.0" />
+    <PackageReference Include="GraphQL" Version="7.7.2" />
+    <PackageReference Include="GraphQL.MemoryCache" Version="7.7.2" />
+    <PackageReference Include="GraphQL.MicrosoftDI" Version="7.7.2" />
+    <PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="7.6.0" />
+    <PackageReference Include="GraphQL.Server.Ui.Playground" Version="7.6.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Orleans.Client" Version="$(OrleansVersion)" />
+    <PackageReference Include="Serilog.AspNetCore" Version="$(SerilogVersion)" />
+    <PackageReference Include="Serilog.Enrichers.Demystifier" Version="1.0.2" />
+    <PackageReference Include="Serilog.Enrichers.Span" Version="3.1.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="Serilog.Enrichers.Environment" Version="2.3.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Movies.Contracts\Movies.Contracts.csproj" />
+    <ProjectReference Include="..\Movies.Core\Movies.Core.csproj" />
+    <ProjectReference Include="..\Movies.GrainClients\Movies.GrainClients.csproj" />
+    <ProjectReference Include="..\Movies.Grains\Movies.Grains.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="app-info.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.dev.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
