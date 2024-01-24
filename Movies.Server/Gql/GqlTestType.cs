@@ -1,11 +1,11 @@
 ﻿using GraphQL.Types;
 using Movies.Contracts;
 
-namespace Movies.Server.Gql.Types;
+namespace Movies.Server.Gql;
 
-public class SampleDataGraphType : ObjectGraphType<SampleDataModel>
+public class GqlTestType : ObjectGraphType<SampleDataModel>
 {
-	public SampleDataGraphType()
+	public GqlTestType()
 	{
 		Name = "Sample";
 		Description = "A sample data graphtype.";

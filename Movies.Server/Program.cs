@@ -1,7 +1,10 @@
 using Destructurama;
+using GraphQL;
+using GraphQL.Types;
 using Microsoft.OpenApi.Models;
 using Movies.Core;
 using Movies.GrainClients;
+using Movies.Server.Gql;
 using Movies.Server.Gql.App;
 using Movies.Server.Infrastructure;
 using Serilog;
@@ -41,7 +44,6 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy => policy
 		.AllowAnyOrigin()
 		.AllowAnyMethod()
 		.AllowAnyHeader()
-		.AllowCredentials()
 	)
 );
 
@@ -52,19 +54,30 @@ builder.Services.AddSwaggerGen(options =>
 	options.SwaggerDoc("v1", new OpenApiInfo { Title = "Movies API", Version = "v1" });
 });
 
-builder.Services.AddGainClients();
-builder.Services.AddAppGraphQL();
+builder.Services.AddGraphQL(builder => builder
+	.AddSystemTextJson()
+	.AddErrorInfoProvider(opt => opt.ExposeExceptionDetails = true)
+);
+
+builder.Services.AddScoped<ISchema, GqlTestSchema>();
+builder.Services.AddScoped<GqlTestType>();
+builder.Services.AddScoped<GqlTestQuery>();
+builder.Services.AddScoped<GqlTestMutation>();
+
+builder.Services.AddScoped<ISchema, GqlNotesSchema>();
+builder.Services.AddScoped<GqlNoteType>();
+builder.Services.AddScoped<GqlNotesQuery>();
+
+builder.Services.AddGrainClients();
 
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
 
-app.UseGraphQL();
-app.UseGraphQLPlayground();
-
 if (app.Environment.IsDevelopment())
 {
 	app.UseDeveloperExceptionPage();
+	app.UseGraphQLAltair();
 	app.UseSwagger();
 	app.UseSwaggerUI(options =>
 	{
@@ -80,5 +93,6 @@ app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
 app.MapControllers();
+app.UseGraphQL<ISchema>();
 
 await app.RunAsync();
