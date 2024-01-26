@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "parcel src/index.html --open",
-    "build": "parcel build"
+    "build": "parcel build src/index.html"
   },
   "dependencies": {
     "@apollo/client": "^3.8.10",

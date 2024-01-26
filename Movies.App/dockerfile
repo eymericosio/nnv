@@ -1,0 +1,11 @@
+FROM node:21-alpine AS build-env
+WORKDIR /App
+
+COPY . ./
+RUN npm ci
+RUN npm run build
+
+# Build runtime image
+FROM httpd:alpine
+WORKDIR /var/www/html
+COPY --from=build-env /App/dist .
