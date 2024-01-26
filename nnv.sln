@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Movies.GrainClients", "Movi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Movies.Contracts", "Movies.Contracts\Movies.Contracts.csproj", "{9C8B1886-40FA-4BFE-AAC8-5A2CF6956B3C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Movies.Core", "Movies.Core\Movies.Core.csproj", "{2F8F85CE-B4FE-4715-A174-236CFB58CD32}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Movies.Api", "Movies.Api\Movies.Api.csproj", "{CD29081A-E063-4BED-9803-7E4659E462A6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Movies.Grains", "Movies.Grains\Movies.Grains.csproj", "{3AA81CDE-F49A-4AF9-B7D9-3077E8774441}"
@@ -29,10 +27,6 @@ Global
 		{9C8B1886-40FA-4BFE-AAC8-5A2CF6956B3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C8B1886-40FA-4BFE-AAC8-5A2CF6956B3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C8B1886-40FA-4BFE-AAC8-5A2CF6956B3C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F8F85CE-B4FE-4715-A174-236CFB58CD32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F8F85CE-B4FE-4715-A174-236CFB58CD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F8F85CE-B4FE-4715-A174-236CFB58CD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F8F85CE-B4FE-4715-A174-236CFB58CD32}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD29081A-E063-4BED-9803-7E4659E462A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD29081A-E063-4BED-9803-7E4659E462A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD29081A-E063-4BED-9803-7E4659E462A6}.Release|Any CPU.ActiveCfg = Release|Any CPU

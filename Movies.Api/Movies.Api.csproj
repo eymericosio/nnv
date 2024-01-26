@@ -30,18 +30,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Movies.Contracts\Movies.Contracts.csproj" />
-    <ProjectReference Include="..\Movies.Core\Movies.Core.csproj" />
     <ProjectReference Include="..\Movies.GrainClients\Movies.GrainClients.csproj" />
     <ProjectReference Include="..\Movies.Grains\Movies.Grains.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="app-info.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="appsettings.dev.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

@@ -1,7 +1,5 @@
 ﻿using GraphQL.Types;
-using Movies.Contracts;
 using Movies.Api.Models;
-using System.Runtime.CompilerServices;
 
 namespace Movies.Api.Gql;
 

@@ -1,28 +1,15 @@
 using Destructurama;
 using GraphQL;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
-using Movies.Core;
 using Movies.GrainClients;
-using Movies.Api.Gql;
 using Movies.Api.Gql.App;
 using Movies.Api.Infrastructure;
 using Serilog;
 using Serilog.Enrichers.Span;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var shortEnvName = AppInfo.MapEnvironmentName(builder.Environment.EnvironmentName);
-builder.Configuration
-	.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
-	.AddJsonFile("app-info.json")
-;
-
-var appInfo = new AppInfo(builder.Configuration);
-builder.Services.AddSingleton(appInfo);
 
 builder.Host.UseSerilog((context, services, configuration) => configuration
 	.ReadFrom.Configuration(context.Configuration)
@@ -32,7 +19,6 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 	.Enrich.WithSpan()
 	.Enrich.WithMachineName()
 	.Enrich.WithDemystifiedStackTraces()
-	.WithAppInfo(appInfo)
 	.WriteTo.Console())
 ;
 
