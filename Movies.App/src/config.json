@@ -1,0 +1,10 @@
+{
+  "ApiRootUrl": "https://localhost:7236/api",
+  "GraphQLRootUrl": "https://localhost:7236/graphql",
+
+  "OpenIdConnect": {
+    "Authority": "https://demo.duendesoftware.com",
+    "ClientId": "interactive.public",
+    "RedirectUri": "http://localhost:1234"
+  }
+}

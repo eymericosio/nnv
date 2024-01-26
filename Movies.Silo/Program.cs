@@ -1,39 +1,49 @@
 using Destructurama;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Movies.Contracts;
 using Movies.Core;
+using Movies.Silo;
+using Orleans.Runtime;
 using Serilog;
 using Serilog.Enrichers.Span;
+using System.Reflection;
+using System.Text.Json;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = Host.CreateDefaultBuilder(args);
 
-var shortEnvName = AppInfo.MapEnvironmentName(builder.Environment.EnvironmentName);
-builder.Configuration
-	.AddJsonFile($"appsettings.{shortEnvName}.json", optional: true)
-	.AddJsonFile("app-info.json")
-;
+builder.ConfigureAppConfiguration(options => options.AddJsonFile("app-info.json"));
 
-var appInfo = new AppInfo(builder.Configuration);
-builder.Services.AddSingleton(appInfo);
+builder
+	.UseSerilog((hostContext, loggerConfiguration) =>
+	{
+		var appInfo = new AppInfo(hostContext.Configuration);
+		loggerConfiguration
+			.ReadFrom.Configuration(hostContext.Configuration)
+			.Destructure.UsingAttributes()
+			.Enrich.FromLogContext()
+			.Enrich.WithSpan()
+			.Enrich.WithMachineName()
+			.Enrich.WithDemystifiedStackTraces()
+			.WithAppInfo(appInfo)
+			.WriteTo.Console()
+		;
+	});
 
-builder.Host.UseSerilog((context, services, configuration) => configuration
-	.ReadFrom.Configuration(context.Configuration)
-	.ReadFrom.Services(services)
-	.Destructure.UsingAttributes()
-	.Enrich.FromLogContext()
-	.Enrich.WithSpan()
-	.Enrich.WithMachineName()
-	.Enrich.WithDemystifiedStackTraces()
-	.WithAppInfo(appInfo)
-	.WriteTo.Console())
-;
-
-builder.Host.UseOrleans(silo =>
+builder.UseOrleans(silo =>
 	{
 		silo.UseLocalhostClustering()
-			.AddMemoryGrainStorageAsDefault()
+			.AddMemoryGrainStorage("memoryStorage")
+			.AddStartupTask<SeedStorageTask>();
 		;
 	})
 	.UseConsoleLifetime();
 
-using var host = builder.Build();
+builder.ConfigureServices(services =>
+{
+	// setup potential local services
+});
 
+using var host = builder.Build();
 await host.RunAsync();
