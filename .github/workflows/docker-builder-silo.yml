@@ -24,7 +24,5 @@ jobs:
         uses: docker/build-push-action@v5.1.0
         with:
           push: true
-          build-args: |
-            version=${{ steps.tag.outputs.tag }}
           file: './Movies.Silo/dockerfile'
-          tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.IMAGE_NAME }}:$(date +%s)
+          tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.IMAGE_NAME }}:latest
