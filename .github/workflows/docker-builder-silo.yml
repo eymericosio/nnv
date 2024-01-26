@@ -4,10 +4,30 @@ on:
   push:
     branches: [ "main" ]
 
+env:
+  IMAGE_NAME: nnv-silo
+
 jobs:
   build:
+    name: Build container image
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file ./Movies.Silo/dockerfile --tag nnv/silo:$(date +%s)
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.1
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+      - name: Log into registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_ENDPOINT }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      - name: Build & Push
+        uses: docker/build-push-action@v5.1.0
+        with:
+          push: true
+          build-args: |
+            version=${{ steps.tag.outputs.tag }}
+          file: './Movies.Silo/dockerfile'
+          tags: ${{ secrets.ACR_ENDPOINT }}/${{ env.IMAGE_NAME }}:$(date +%s)
