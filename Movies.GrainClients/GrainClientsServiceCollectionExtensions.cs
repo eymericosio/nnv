@@ -7,6 +7,6 @@ public static class GrainClientsServiceCollectionExtensions
 {
 	public static void AddGrainClients(this IServiceCollection services)
 	{
-		services.AddSingleton<IMovieService, MovieService>();
+		services.AddSingleton<IMovieGrainClient, MovieGrainClient>();
 	}
 }

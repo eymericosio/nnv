@@ -1,6 +1,6 @@
 namespace Movies.Contracts;
 
-public interface IMovieService
+public interface IMovieGrainClient
 {
 	Task<HashSet<Movie>> List(string? search, IEnumerable<string>? genres);
 	Task<HashSet<Movie>> TopRated();

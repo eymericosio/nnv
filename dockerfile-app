@@ -7,5 +7,4 @@ RUN npm run build --prefix Movies.App
 
 # Build runtime image
 FROM httpd:alpine
-WORKDIR /var/www/html
-COPY --from=build-env /App/Movies.App/dist .
+COPY --from=build-env /App/Movies.App/dist /usr/local/apache2/htdocs/

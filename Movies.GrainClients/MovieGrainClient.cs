@@ -2,11 +2,11 @@ using Movies.Contracts;
 
 namespace Movies.GrainClients;
 
-public class MovieService : IMovieService
+internal class MovieGrainClient : IMovieGrainClient
 {
 	private readonly IClusterClient client;
 
-	public MovieService(IClusterClient client)
+	public MovieGrainClient(IClusterClient client)
 	{
 		this.client = client;
 	}

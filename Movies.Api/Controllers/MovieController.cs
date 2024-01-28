@@ -10,24 +10,24 @@ namespace Movies.Api.Controllers;
 [Authorize]
 public class MovieController : ControllerBase
 {
-	private readonly IMovieService service;
+	private readonly IMovieGrainClient client;
 
-	public MovieController(IMovieService service)
+	public MovieController(IMovieGrainClient client)
 	{
-		this.service = service;
+		this.client = client;
 	}
 
 	[HttpGet]
 	public async Task<ActionResult<IEnumerable<MovieModel>>> List(string? search = null, [FromQuery] IEnumerable<string>? genres = null)
 	{
-		var movies = await service.List(search, genres);
+		var movies = await client.List(search, genres);
 		return Ok(movies.Select(m => new MovieModel(m)));
 	}
 
 	[HttpGet("top-rated")]
 	public async Task<ActionResult<IEnumerable<MovieModel>>> TopRated()
 	{
-		var movies = await service.TopRated();
+		var movies = await client.TopRated();
 		return Ok(movies.Select(m => new MovieModel(m)));
 	}
 
@@ -36,17 +36,17 @@ public class MovieController : ControllerBase
 	{
 		if (!ModelState.IsValid)
 			return ValidationProblem(ModelState);
-		var movie = await service.Fetch(model.Key!);
+		var movie = await client.Fetch(model.Key!);
 		if (movie.Name is not null)
 			return Problem(statusCode: StatusCodes.Status409Conflict);
-		movie = await service.Upsert(model.ToMovie(model.Key!));
+		movie = await client.Upsert(model.ToMovie(model.Key!));
 		return Ok(new MovieModel(movie));
 	}
 
 	[HttpGet("{key}")]
 	public async Task<ActionResult<MovieModel>> Fetch(string key)
 	{
-		var movie = await service.Fetch(key);
+		var movie = await client.Fetch(key);
 		if (movie.Name is null || movie.IsDeleted)
 			return Problem(statusCode: StatusCodes.Status404NotFound);
 		return Ok(new MovieModel(movie));
@@ -55,22 +55,22 @@ public class MovieController : ControllerBase
 	[HttpPut("{key}")]
 	public async Task<ActionResult<MovieModel>> Update(string key, MovieUpdateModel model)
 	{
-		var movie = await service.Fetch(key);
+		var movie = await client.Fetch(key);
 		if (movie.Name is null || movie.IsDeleted)
 			return Problem(statusCode: StatusCodes.Status404NotFound);
 		if (!ModelState.IsValid)
 			return ValidationProblem(ModelState);
-		movie = await service.Upsert(model.ToMovie(key));
+		movie = await client.Upsert(model.ToMovie(key));
 		return Ok(new MovieModel(movie));
 	}
 
 	[HttpDelete("{key}")]
 	public async Task<ActionResult<MovieModel>> Delete(string key)
 	{
-		var movie = await service.Fetch(key);
+		var movie = await client.Fetch(key);
 		if (movie.Name is null || movie.IsDeleted)
 			return Problem(statusCode: StatusCodes.Status404NotFound);
-		movie = await service.Delete(key);
+		movie = await client.Delete(key);
 		return Ok(new MovieModel(movie));
 	}
 }

@@ -4,11 +4,9 @@ using GraphQL.Types;
 using Microsoft.OpenApi.Models;
 using Movies.GrainClients;
 using Movies.Api.Gql.App;
-using Movies.Api.Infrastructure;
 using Serilog;
 using Serilog.Enrichers.Span;
 using Microsoft.AspNetCore.Authorization;
-using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,12 +23,8 @@ builder.Host.UseSerilog((context, services, configuration) => configuration
 
 builder.Host.UseOrleansClient(client =>
 {
-	if (builder.Environment.IsDevelopment())
-		client.UseLocalhostClustering();
-	else
-		client.UseStaticClustering(new IPEndPoint(IPAddress.Parse(builder.Configuration.GetValue<string>("Silo:Address")), builder.Configuration.GetValue<int>("Silo:Port")));
-})
-	.ConfigureLogging(logging => logging.AddConsole());
+	client.UseLocalhostClustering();
+});
 
 builder.Services.AddAuthentication("access_token")
 	.AddOAuth2Introspection("access_token", options =>
@@ -103,7 +97,6 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddGraphQL(b => b
 	.AddSystemTextJson()
 	.AddErrorInfoProvider(opt => opt.ExposeExceptionDetails = true)
-	.AddUserContextBuilder(httpContext => new MyGraphQLUserContext(httpContext.User))
 	.AddSelfActivatingSchema<GqlMovieSchema>()
 	.AddAuthorizationRule()
 	.ConfigureExecutionOptions(options =>
