@@ -9,6 +9,5 @@ public sealed record class Movie
 	[Id(3)] public byte Rate { get; set; } = 0;
 	[Id(4)] public string Length { get; set; } = string.Empty;
 	[Id(5)] public string Img { get; set; } = string.Empty;
-	[Id(6)] public IEnumerable<string> Genres { get; set; } = Enumerable.Empty<string>();
-	[Id(7)] public bool IsDeleted { get; set; } = false;
+	[Id(6)] public HashSet<string> Genres { get; set; } = [];
 }

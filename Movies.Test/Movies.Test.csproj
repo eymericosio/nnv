@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="microsoft.orleans.persistence.memory" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Orleans.TestingHost" Version="8.0.0" />
+    <PackageReference Include="NSubstitute" Version="5.1.0" />
+    <PackageReference Include="xunit" Version="2.6.6" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Movies.Api\Movies.Api.csproj" />
+    <ProjectReference Include="..\Movies.Contracts\Movies.Contracts.csproj" />
+    <ProjectReference Include="..\Movies.GrainClients\Movies.GrainClients.csproj" />
+    <ProjectReference Include="..\Movies.Grains\Movies.Grains.csproj" />
+    <ProjectReference Include="..\Movies.Silo\Movies.Silo.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="movies.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  
+</Project>

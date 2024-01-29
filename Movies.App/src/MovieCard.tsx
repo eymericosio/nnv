@@ -38,7 +38,7 @@ export function MovieCard(props: { movie: IMovie }) {
 					<Button
 						size="small"
 						component={Link}
-						to={"movies/" + props.movie.key}
+						to={"/movies/" + props.movie.key}
 					>
 						See More
 					</Button>

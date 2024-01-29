@@ -1,68 +1,37 @@
-import {
-	Box,
-	Grid,
-	Chip,
-	TextField,
-	Autocomplete,
-	Container,
-	AppBar,
-	Button,
-	IconButton,
-	Toolbar,
-	Typography,
-} from "@mui/material";
 import * as React from "react";
-import { useEffect, useMemo, useState } from "react";
-import { useAuth } from "oidc-react";
-import { MoviesList } from "./MoviesList";
-import {
-	ApolloProvider,
-	ApolloClient,
-	InMemoryCache,
-	gql,
-	useQuery,
-	useMutation,
-} from "@apollo/client";
-import * as config from "./config.json";
-import MenuIcon from "@mui/icons-material/Menu";
-import LogoutIcon from "@mui/icons-material/Logout";
-import {
-	createBrowserRouter,
-	Link,
-	Outlet,
-	RouterProvider,
-	useMatch,
-	useParams,
-	useRouteError,
-} from "react-router-dom";
-import HomeRoute from "./HomeRoute";
-import { key } from "localforage";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { useNavigate, useParams } from "react-router-dom";
 import { IMovie } from "./Api/MoviesApi";
-import EditIcon from "@mui/icons-material/Edit";
-import CancelIcon from "@mui/icons-material/Cancel";
+import { useMemo, useState } from "react";
+import { Grid, Button } from "@mui/material";
+import MovieForm from "./MovieForm";
 import SaveIcon from "@mui/icons-material/Save";
-
-const MOVIE_QUERY = gql`
-	query Movie($key: ID!) {
-		movie(key: $key) {
-			key
-			name
-			rate
-			genres
-			length
-			img
-			description
-		}
-	}
-`;
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 export default function MovieRoute() {
 	const { movieKey } = useParams();
-	const [movie, setMovie] = useState<IMovie>();
+
+	const MOVIE_QUERY = useMemo(
+		() => gql`
+			query Movie($key: ID!) {
+				movie(key: $key) {
+					key
+					name
+					rate
+					genres
+					length
+					img
+					description
+				}
+			}
+		`,
+		[]
+	);
 
 	const fetch = useQuery<{ movie: IMovie }>(MOVIE_QUERY, {
 		variables: { key: movieKey },
-		notifyOnNetworkStatusChange: true,
 	});
 
 	if (fetch.loading) return "Loading...";
@@ -71,30 +40,58 @@ export default function MovieRoute() {
 
 	return (
 		<>
-			<Form defaultValue={fetch.data.movie} />
+			<Content movie={fetch.data.movie} />
 		</>
 	);
 }
 
-const MOVIE_UPDATE = gql`
-	mutation UpdateMovie($key: ID!, $movie: MovieUpdate!) {
-		updateMovie(key: $key, movie: $movie) {
-			key
-			name
-			rate
-			genres
-			length
-			img
-			description
-		}
-	}
-`;
-
-export function Form(props: { defaultValue: IMovie }) {
+function Content(props: { movie: Readonly<IMovie> }) {
 	const [editing, setEditing] = useState<boolean>(false);
-	const [movie, setMovie] = useState<IMovie>({ ...props.defaultValue });
+	const [model, setModel] = useState<IMovie>({ ...props.movie });
+	const navigate = useNavigate();
 
-	const [mutate, mutation] = useMutation<{ movie: IMovie }>(MOVIE_UPDATE);
+	const MOVIE_UPDATE = useMemo(
+		() => gql`
+			mutation UpdateMovie($key: ID!, $movie: MovieUpdate!) {
+				updateMovie(key: $key, movie: $movie) {
+					key
+					name
+					rate
+					genres
+					length
+					img
+					description
+				}
+			}
+		`,
+		[]
+	);
+	const [updateMutation] = useMutation<{ movie: IMovie }>(MOVIE_UPDATE);
+
+	const MOVIE_DELETE = useMemo(
+		() => gql`
+			mutation DeleteMovie($key: ID!) {
+				deleteMovie(key: $key) {
+					key
+					name
+					rate
+					genres
+					length
+					img
+					description
+				}
+			}
+		`,
+		[]
+	);
+	const [deleteMutation] = useMutation<{ deleteMovie: IMovie }>(MOVIE_DELETE, {
+		update(cache, { data }) {
+			if (data?.deleteMovie) {
+				const cacheKey = `movie:{"key":"${data.deleteMovie.key}"}`;
+				cache.evict({ id: cacheKey });
+			}
+		},
+	});
 
 	async function startEdition() {
 		setEditing(true);
@@ -102,39 +99,57 @@ export function Form(props: { defaultValue: IMovie }) {
 
 	async function cancelEdition() {
 		setEditing(false);
-		setMovie({ ...props.defaultValue });
+		setModel({ ...props.movie });
 	}
 
-	async function saveEdition() {
+	async function saveMovie() {
 		setEditing(false);
 		const input = {
-			name: movie.name,
-			description: movie.description,
-			rate: movie.rate,
-			length: movie.length,
-			img: movie.img,
-			genres: movie.genres,
+			name: model.name,
+			description: model.description,
+			rate: model.rate,
+			length: model.length,
+			img: model.img,
+			genres: model.genres,
 		};
-		await mutate({ variables: { key: props.defaultValue.key, movie: input } });
+		await updateMutation({ variables: { key: props.movie.key, movie: input } });
+	}
+
+	async function deleteMovie() {
+		if (confirm("Are you sure to delete this movie?")) {
+			setEditing(false);
+			await deleteMutation({ variables: { key: props.movie.key } });
+			navigate("/");
+		}
 	}
 
 	return (
 		<>
-			<Grid container spacing={4}>
+			<Grid container spacing={4} sx={{ marginBottom: 2 }}>
 				<Grid
 					item
 					xs={12}
 					sx={{ display: "flex", justifyContent: "right", gap: 3 }}
 				>
 					{!editing && (
-						<Button
-							color="primary"
-							variant="contained"
-							endIcon={<EditIcon />}
-							onClick={() => startEdition()}
-						>
-							Edit
-						</Button>
+						<>
+							<Button
+								color="primary"
+								variant="contained"
+								endIcon={<EditIcon />}
+								onClick={() => startEdition()}
+							>
+								Edit
+							</Button>
+							<Button
+								color="error"
+								variant="contained"
+								endIcon={<DeleteIcon />}
+								onClick={() => deleteMovie()}
+							>
+								Delete
+							</Button>
+						</>
 					)}
 					{editing && (
 						<>
@@ -150,97 +165,19 @@ export function Form(props: { defaultValue: IMovie }) {
 								color="success"
 								variant="contained"
 								endIcon={<SaveIcon />}
-								onClick={() => saveEdition()}
+								onClick={() => saveMovie()}
 							>
 								Save
 							</Button>
 						</>
 					)}
 				</Grid>
-
-				<Grid item xs={6}>
-					<TextField
-						label="Name"
-						value={movie.name}
-						onChange={(event) =>
-							setMovie({ ...movie, name: event.target.value })
-						}
-						fullWidth
-						disabled={!editing}
-					/>
-				</Grid>
-
-				<Grid item xs={6}>
-					<TextField
-						label="Rate"
-						type="number"
-						inputProps={{ step: ".01" }}
-						value={movie.rate}
-						onChange={(event) =>
-							setMovie({ ...movie, rate: Number(event.target.value) })
-						}
-						fullWidth
-						disabled={!editing}
-					/>
-				</Grid>
-
-				<Grid item xs={6}>
-					<TextField
-						label="Duration"
-						value={movie.length}
-						onChange={(event) =>
-							setMovie({ ...movie, length: event.target.value })
-						}
-						fullWidth
-						disabled={!editing}
-					/>
-				</Grid>
-
-				<Grid item xs={6}>
-					<TextField
-						label="Image"
-						value={movie.img}
-						onChange={(event) =>
-							setMovie({ ...movie, img: event.target.value })
-						}
-						fullWidth
-						disabled={!editing}
-					/>
-				</Grid>
-
-				<Grid item xs={12}>
-					<Autocomplete
-						multiple
-						options={[]}
-						defaultValue={[]}
-						freeSolo
-						value={movie.genres}
-						onChange={(event, values) =>
-							setMovie({ ...movie, genres: [...values] })
-						}
-						renderTags={(value: readonly string[], getTagProps) =>
-							value.map((option: string, index: number) => (
-								<Chip label={option} {...getTagProps({ index })} />
-							))
-						}
-						renderInput={(params) => <TextField {...params} label="Genres" />}
-						disabled={!editing}
-					/>
-				</Grid>
-
-				<Grid item xs={12}>
-					<TextField
-						label="Description"
-						value={movie.description}
-						onChange={(event) =>
-							setMovie({ ...movie, description: event.target.value })
-						}
-						fullWidth
-						multiline
-						disabled={!editing}
-					/>
-				</Grid>
 			</Grid>
+			<MovieForm
+				movie={model}
+				setMovie={(m) => setModel(m)}
+				disabled={!editing}
+			/>
 		</>
 	);
 }

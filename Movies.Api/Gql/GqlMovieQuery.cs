@@ -14,21 +14,19 @@ public class GqlMovieQuery : ObjectGraphType
 			.ResolveAsync(async context =>
 			{
 				var key = context.GetArgument<string>("key");
-				var movie = await client.Fetch(key);
-				if (movie.Name is null || movie.IsDeleted)
-					throw new ExecutionError("Invalid Key");
+				var movie = await client.Fetch(key) ?? throw new ExecutionError("Invalid Key");
 				return new MovieModel(movie);
 			});
 		;
 
 		Field<ListGraphType<GqlMovieType>>("movies")
-			.Argument<StringGraphType>("search")
+			.Argument<StringGraphType>("text")
 			.Argument<ListGraphType<StringGraphType>>("genres")
 			.ResolveAsync(async context =>
 			{
-				var search = context.GetArgument<string?>("search");
+				var text = context.GetArgument<string?>("text");
 				var genres = context.GetArgument<IEnumerable<string>?>("genres");
-				var movies = await client.List(search, genres);
+				var movies = await client.List(text, genres);
 				return movies.Select(m => new MovieModel(m));
 			});
 

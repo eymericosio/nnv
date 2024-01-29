@@ -15,9 +15,9 @@ public class TopMoviesGrain : Grain, ITopMoviesGrain
 
 	public override async Task OnActivateAsync(CancellationToken cancellationToken)
 	{
-		var moviesGrain = grainFactory.GetGrain<IMoviesGrain>(0);
-		var movies = await moviesGrain.List(null, null);
-		foreach (var movie in movies.Where(m => !m.IsDeleted).OrderByDescending(m => m.Rate).Take(5))
+		var movieIndex = grainFactory.GetGrain<IMovieIndexGrain>(0);
+		var movies = await movieIndex.List(null, null);
+		foreach (var movie in movies.OrderByDescending(m => m.Rate).Take(5))
 			cache.Add(movie.Key, movie);
 
 		await base.OnActivateAsync(cancellationToken);
@@ -29,5 +29,5 @@ public class TopMoviesGrain : Grain, ITopMoviesGrain
 		return base.OnDeactivateAsync(reason, cancellationToken);
 	}
 
-	public Task<HashSet<Movie>> TopRated() => Task.FromResult(cache.Values.ToHashSet());
+	public Task<HashSet<Movie>> List() => Task.FromResult(cache.Values.ToHashSet());
 }

@@ -28,10 +28,10 @@ public sealed class SeedStorageTask : IStartupTask
 				Key = movie.key,
 				Name = movie.name ?? string.Empty,
 				Description = movie.description ?? string.Empty,
-				Rate = (byte)(movie.rate is not null ? decimal.TryParse(movie.rate, out var rate) ? rate * 10 : 0 : 0),
+				Rate = (byte)(decimal.TryParse(movie.rate, out var rate) ? rate * 10 : 0),
 				Length = movie.length ?? string.Empty,
 				Img = movie.img ?? string.Empty,
-				Genres = movie.genres ?? Enumerable.Empty<string>(),
+				Genres = movie.genres ?? []
 			});
 		}
 	}
@@ -45,6 +45,6 @@ public sealed class SeedStorageTask : IStartupTask
 		string? rate,
 		string? length,
 		string? img,
-		IEnumerable<string>? genres
+		HashSet<string>? genres
 	);
 }

@@ -1,9 +1,10 @@
 namespace Movies.Contracts;
 using Orleans.Concurrency;
 
-public interface IMoviesGrain : IGrainWithIntegerKey
+public interface IMovieIndexGrain : IGrainWithIntegerKey
 {
-	[OneWay]
-	Task OnUpdate(Movie movie);
-	Task<HashSet<Movie>> List(string? search, IEnumerable<string>? genres);
+	Task Refresh();
+	Task Add(Movie movie);
+	Task Remove(string key);
+	Task<HashSet<Movie>> List(string? text, HashSet<string>? genres);
 }

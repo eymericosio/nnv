@@ -8,7 +8,6 @@ public class MovieCreateInputType : InputObjectGraphType<MovieCreateModel>
 	public MovieCreateInputType()
 	{
 		Name = "MovieCreate";
-		this.Key();
 		this.Name();
 		this.Description();
 		this.Rate();

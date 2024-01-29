@@ -11,19 +11,19 @@ internal class MovieGrainClient : IMovieGrainClient
 		this.client = client;
 	}
 
-	public Task<HashSet<Movie>> List(string? search, IEnumerable<string>? genres)
+	public Task<HashSet<Movie>> List(string? text, IEnumerable<string>? genres)
 	{
-		var grain = client.GetGrain<IMoviesGrain>(0);
-		return grain.List(search, genres);
+		var grain = client.GetGrain<IMovieIndexGrain>(0);
+		return grain.List(text, genres?.ToHashSet());
 	}
 
 	public Task<HashSet<Movie>> TopRated()
 	{
 		var grain = client.GetGrain<ITopMoviesGrain>(DateTimeOffset.UtcNow.ToString("yyyy-MM-dd-HH-mm"));
-		return grain.TopRated();
+		return grain.List();
 	}
 
-	public Task<Movie> Fetch(string key)
+	public Task<Movie?> Fetch(string key)
 	{
 		var grain = client.GetGrain<IMovieGrain>(key);
 		return grain.Get();
@@ -35,7 +35,7 @@ internal class MovieGrainClient : IMovieGrainClient
 		return grain.Set(movie);
 	}
 
-	public Task<Movie> Delete(string key)
+	public Task<Movie?> Delete(string key)
 	{
 		var grain = client.GetGrain<IMovieGrain>(key);
 		return grain.Delete();

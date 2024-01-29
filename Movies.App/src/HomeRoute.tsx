@@ -1,35 +1,40 @@
-import { Grid, Chip, TextField, Autocomplete } from "@mui/material";
+import { Grid, Chip, TextField, Autocomplete, Box, Fab } from "@mui/material";
 import * as React from "react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { MoviesList } from "./MoviesList";
 import { gql, useQuery } from "@apollo/client";
 import { IMovie } from "./Api/MoviesApi";
-
-const MOVIES_QUERY = gql`
-	query Movies($text: String, $genres: [String]) {
-		movies(search: $text, genres: $genres) {
-			key
-			name
-			rate
-			genres
-			length
-		}
-	}
-`;
+import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
 
 export default function HomeRoute() {
-	const [inputs, setSearch] = useState<{
+	const [search, setSearch] = useState<{
 		text: string;
 		genres: Array<string>;
 	}>({
 		text: "",
 		genres: [],
 	});
+	const navigate = useNavigate();
 
-	const { data, loading, error, refetch } = useQuery<{ movies: Array<IMovie> }>(
-		MOVIES_QUERY,
-		{ variables: { text: inputs.text, genres: inputs.genres } }
+	const MOVIES_QUERY = useMemo(
+		() => gql`
+			query Movies($text: String, $genres: [String]) {
+				movies(text: $text, genres: $genres) {
+					key
+					name
+					rate
+					genres
+					length
+				}
+			}
+		`,
+		[]
 	);
+
+	const { data, error } = useQuery<{ movies: Array<IMovie> }>(MOVIES_QUERY, {
+		variables: { text: search.text, genres: search.genres },
+	});
 
 	if (error) return <pre>{error.message}</pre>;
 
@@ -40,9 +45,9 @@ export default function HomeRoute() {
 					<TextField
 						label="Search name and description..."
 						fullWidth
-						value={inputs.text}
+						value={search.text}
 						onChange={(event) => {
-							setSearch({ ...inputs, text: event.target.value });
+							setSearch({ ...search, text: event.target.value });
 						}}
 					/>
 				</Grid>
@@ -52,9 +57,9 @@ export default function HomeRoute() {
 						options={[]}
 						defaultValue={[]}
 						freeSolo
-						value={inputs.genres}
+						value={search.genres}
 						onChange={(event, value) => {
-							setSearch({ ...inputs, genres: value });
+							setSearch({ ...search, genres: value });
 						}}
 						renderTags={(value: readonly string[], getTagProps) =>
 							value.map((option: string, index: number) => (
@@ -69,6 +74,19 @@ export default function HomeRoute() {
 			</Grid>
 
 			<MoviesList movies={data?.movies ?? []} />
+
+			<Box sx={{ position: "sticky", bottom: 16, marginTop: 15 }}>
+				<Fab
+					color="primary"
+					aria-label="add"
+					sx={{ position: "absolute", bottom: 0, right: 16 }}
+					onClick={() => {
+						navigate("/create");
+					}}
+				>
+					<AddIcon />
+				</Fab>
+			</Box>
 		</>
 	);
 }

@@ -1,6 +1,7 @@
 using Movies.Contracts;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Movies.Api.Models;
 
@@ -9,12 +10,13 @@ public class MovieModel : MovieCreateModel
 	public MovieModel(Movie movie)
 		: base(movie)
 	{
+		Key = movie.Key;
 	}
 
-	// Could have auto generated fields like created date, etc.
+	public string Key { get; set; }
 }
 
-public class MovieCreateModel : MovieUpdateModel
+public partial class MovieCreateModel : MovieUpdateModel
 {
 	[JsonConstructor]
 	public MovieCreateModel()
@@ -24,11 +26,17 @@ public class MovieCreateModel : MovieUpdateModel
 	public MovieCreateModel(Movie movie)
 		: base(movie)
 	{
-		Key = movie.Key;
 	}
 
-	[Required, Length(1, 250)]
-	public string? Key { get; set; }
+	public string? GenerateKey()
+	{
+		if (string.IsNullOrEmpty(Name))
+			return null;
+		return KeyRegex().Replace(Name.ToLowerInvariant().Replace(" ", "-"), "");
+	}
+
+	[GeneratedRegex("[^a-zA-Z0-9-]+", RegexOptions.Compiled)]
+	private static partial Regex KeyRegex();
 }
 
 public class MovieUpdateModel
@@ -48,7 +56,7 @@ public class MovieUpdateModel
 		Genres = movie.Genres.ToList();
 	}
 
-	public Movie ToMovie(string key) => new Movie()
+	public Movie ToMovie(string key) => new()
 	{
 		Key = key,
 		Name = Name,
@@ -56,7 +64,7 @@ public class MovieUpdateModel
 		Rate = (byte)(Rate * 10),
 		Length = Length,
 		Img = Img,
-		Genres = Genres
+		Genres = Genres.ToHashSet()
 	};
 
 	[Required, Length(1, 250)]
@@ -75,5 +83,5 @@ public class MovieUpdateModel
 	public string Img { get; set; } = string.Empty;
 
 	[Required, Length(1, 9)]
-	public IEnumerable<string> Genres { get; set; } = Enumerable.Empty<string>();
+	public List<string> Genres { get; set; } = [];
 }
