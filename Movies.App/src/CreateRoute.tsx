@@ -5,9 +5,11 @@ import { IMovie } from "./Api/MoviesApi";
 import MovieForm from "./MovieForm";
 import { Grid, Button } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateRoute() {
 	const [movie, setMovie] = useState<IMovie>(() => initialState());
+	const navigate = useNavigate();
 
 	function initialState(): IMovie {
 		return {
@@ -57,6 +59,7 @@ export default function CreateRoute() {
 			genres: movie.genres,
 		};
 		await createMutation({ variables: { movie: input } });
+		navigate("/");
 	}
 
 	return (
