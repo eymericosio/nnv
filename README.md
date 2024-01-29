@@ -23,11 +23,11 @@ The main components of the app:
 - the creation page accessible via the `+` button at the bottom of the Home page
 - the details and edition page accessible via the `See more` links
 
-> To note: the app requires an authenticated user via an OpenIdConnect flow ; you can use users `bob/bob` or `alice/alice` to login
+> Note: the app requires an authenticated user via an OpenIdConnect flow ; you can use users `bob/bob` or `alice/alice` to login
 
 # Helpers
 The Api project includes a `/swagger` page for the REST endpoints, as well as a GQL UI page at `/ui/altair`. With the default configuration of the project the full URLs would be:
 - https://localhost:7236/swagger
 - https://localhost:7236/ui/altair
 
-> To note: the Api requires an authenticated user via a bearer token scheme ; it is retrieved by the app during the OpenIdConnect flow mentioned above
+> Note: the Api requires an authenticated user via a bearer token scheme ; it is retrieved by the app during the OpenIdConnect flow mentioned above
