@@ -18,7 +18,7 @@
 # Use the app
 When the front end app is run it should automatically open `http://localhost:1234/`.
 The main components of the app:
-- the Home page displaying all movies and an option to search by keyworks and/or genres
+- the Home page displaying all movies and an option to search by keywords and/or genres
 - the Top Rated displaying the 5 highest ranked movies
 - the creation page accessible via the `+` button at the bottom of the Home page
 - the details and edition page accessible via the `See more` links
